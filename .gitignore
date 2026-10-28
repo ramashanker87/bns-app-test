@@ -1,0 +1,9 @@
+node_modules/
+dist/
+lib/
+cdk.out/
+.env
+.env.production
+cdk-outputs.json
+.env.*.local
+*.log

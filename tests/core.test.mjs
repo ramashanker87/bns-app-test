@@ -1,0 +1,5 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import crypto from 'node:crypto';import{phone,totals,validTwilio,safeFile}from '../backend/core.mjs';
+test('normalizes and rejects numbers',()=>{assert.equal(phone('+1 (415) 555-0100'),'+14155550100');assert.throws(()=>phone('4155550100'))});
+test('checks signature against exact URL and form encoding',()=>{const u='https://example.org/webhooks/twilio',b='Body=A%2BB&MessageSid=SM123',secret='secret';const sig=crypto.createHmac('sha1',secret).update(u+'BodyA+BMessageSidSM123').digest('base64');assert.equal(validTwilio(u,b,sig,secret),true);assert.equal(validTwilio(u+'/',b,sig,secret),false)});
+test('computes expected, missing and accepted totals',()=>{const past='2020-01-01T00:00:00Z';assert.deepEqual(totals([{status:'missing',dueAt:past},{status:'completed',dueAt:past,submittedAt:'2020-01-02T00:00:00Z',progress:4}]),{expected:2,completed:1,missing:1,late:1,progress:4,completion:50})});
+test('limits uploads',()=>{assert.equal(safeFile('application/pdf',1000),true);assert.equal(safeFile('text/html',1000),false);assert.equal(safeFile('image/png',11000000),false)});

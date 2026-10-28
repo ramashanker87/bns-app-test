@@ -1,0 +1,4 @@
+// Creates a Twilio whatsapp/flows template. Requires a published Meta Flow ID.
+const {TWILIO_API_KEY:key,TWILIO_API_SECRET:secret,META_FLOW_ID:flow}=process.env;if(!key||!secret||!flow)throw Error('Set TWILIO_API_KEY, TWILIO_API_SECRET and META_FLOW_ID');
+const payload={friendly_name:'jso_progress_report',language:'en',variables:{'1':'example-token'},types:{'whatsapp/flows':{body:'Please submit your progress report.',button_text:'Open report',flow_id:flow,flow_token:'{{1}}',flow_first_page_id:'REPORT'}}};
+const r=await fetch('https://content.twilio.com/v1/Content',{method:'POST',headers:{authorization:'Basic '+Buffer.from(`${key}:${secret}`).toString('base64'),'content-type':'application/json'},body:JSON.stringify(payload)});const data=await r.json();if(!r.ok)throw Error(JSON.stringify(data));console.log(JSON.stringify({sid:data.sid,approvalUrl:data.links?.approval_create},null,2));
